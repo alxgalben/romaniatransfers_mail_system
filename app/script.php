@@ -48,12 +48,12 @@ if ($result->num_rows > 0) {
         $mail->isSMTP();                                            
         $mail->Host       = 'smtp.example.com';                     
         $mail->SMTPAuth   = true;                                   
-        $mail->Username   = 'your_email@example.com';               
+        $mail->Username   = 'test@example.com';               
         $mail->Password   = 'your_password';                        
         $mail->SMTPSecure = 'tls';                                  
         $mail->Port       = 587;                                    
 
-        $mail->setFrom('your_email@example.com', 'Your Name');
+        $mail->setFrom('test@example.com', 'Your Name');
         $mail->addAddress('transfer@travis.ro');  // Email where the alerts will be sent
 
         $mail->isHTML(true);                                  
