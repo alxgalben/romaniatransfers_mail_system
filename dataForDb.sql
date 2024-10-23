@@ -1,0 +1,6 @@
+CREATE TABLE email_alerta_neprocesate_log (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  idTransfer INT NOT NULL,
+  data TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  continut TEXT NOT NULL
+);
