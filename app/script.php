@@ -53,8 +53,8 @@ if ($result->num_rows > 0) {
         $mail->SMTPSecure = 'tls';                                  
         $mail->Port       = 587;                                    
 
-        $mail->setFrom('test@example.com', 'Your Name');
-        $mail->addAddress('transfer@travis.ro');  // Email where the alerts will be sent
+        $mail->setFrom('test@example.com', 'Sergiu');
+        $mail->addAddress('transfer@travis.ro');
 
         $mail->isHTML(true);                                  
         $mail->Subject = 'Alerte Transferuri Neprocesate';
