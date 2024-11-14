@@ -14,7 +14,6 @@ $transfer_id = isset($_GET['transfer_id']) ? intval($_GET['transfer_id']) : 0;
 $email_type_id = isset($_GET['email_type_id']) ? intval($_GET['email_type_id']) : 0;
 
 if ($transfer_id && $email_type_id) {
-    // Fetch
     $stmt = $mysqli->prepare("SELECT * FROM rt_transferuri WHERE id = ?");
     $stmt->bind_param("i", $transfer_id);
     $stmt->execute();
@@ -22,9 +21,18 @@ if ($transfer_id && $email_type_id) {
     $stmt->close();
 
     if ($transfer) {
-        // Decrypt
-        $transfer['nume_complet'] = decrypt($transfer['nume_complet']);
-        $transfer['numar_transfer'] = decrypt($transfer['numar_transfer']);
+        // all markers from rt_markeri table
+        $markerStmt = $mysqli->prepare("SELECT cod FROM rt_markeri");
+        $markerStmt->execute();
+        $markers = $markerStmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        $markerStmt->close();
+
+        foreach ($markers as $marker) {
+            $markerCode = $marker['cod'];
+            if (isset($transfer[$markerCode])) {
+                $transfer[$markerCode] = decrypt($transfer[$markerCode]);
+            }
+        }
 
         // email template
         $stmt = $mysqli->prepare("SELECT subject, content FROM rt_emails WHERE id = ?");
@@ -34,10 +42,17 @@ if ($transfer_id && $email_type_id) {
         $stmt->close();
 
         if ($template) {
-            $subject = str_replace(['__numar_transfer', '__nume_complet'], [$transfer['numar_transfer'], $transfer['nume_complet']], $template['subject']);
-            $body = str_replace(['__numar_transfer', '__nume_complet'], [$transfer['numar_transfer'], $transfer['nume_complet']], $template['content']);
+            $subject = $template['subject'];
+            $body = $template['content'];
 
-            // send email
+            foreach ($markers as $marker) {
+                $markerCode = $marker['cod'];
+                $value = isset($transfer[$markerCode]) ? $transfer[$markerCode] : '';
+                $subject = str_replace($markerCode, $value, $subject);
+                $body = str_replace($markerCode, $value, $body);
+            }
+
+            // Send email
             $mail = new PHPMailer(true);
             try {
                 $mail->isSMTP();
